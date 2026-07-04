@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Coffee Procurement</title>
+  <style>
+    :root {
+      --ink: #1d1b18;
+      --muted: #6d665d;
+      --line: #ded8ce;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --coffee: #5b3926;
+      --leaf: #2f6f4e;
+      --gold: #bd8734;
+      --red: #b54d43;
+      --blue: #386a8f;
+      --shadow: 0 18px 50px rgba(45, 35, 24, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, "Noto Sans Thai", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, #f8f4ec 0%, #eef3ed 55%, #f7f4ef 100%);
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      padding: 28px 20px;
+      background: #271c16;
+      color: #fffaf2;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #f2c36f;
+      color: #271c16;
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: #d4c7b9;
+      font-size: 13px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #efe7db;
+      background: transparent;
+      text-align: left;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(242, 195, 111, .16);
+      color: #fff;
+    }
+
+    .user-panel {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 24px;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+      color: #efe7db;
+      font-size: 13px;
+    }
+
+    .main {
+      padding: 30px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .topbar p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #efe8dc;
+      color: #5d442e;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-header p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .metric {
+      padding: 18px;
+      min-height: 132px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 32px;
+    }
+
+    .metric small {
+      color: var(--leaf);
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #463b32;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d5cdc0;
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(189, 135, 52, .16);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--coffee);
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      color: var(--coffee);
+      background: #efe8dc;
+    }
+
+    .btn.danger {
+      background: var(--red);
+    }
+
+    .btn.approve {
+      background: var(--leaf);
+    }
+
+    .search {
+      margin-bottom: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: #fbf7ef;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #efe8dc;
+      color: #5d442e;
+    }
+
+    .status.approved {
+      color: #fff;
+      background: var(--leaf);
+    }
+
+    .status.pending {
+      color: #2f4f6f;
+      background: #dfeaf1;
+    }
+
+    .status.low {
+      color: #fff;
+      background: var(--red);
+    }
+
+    .inline-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #f1ece4;
+      color: var(--coffee);
+      font-weight: 800;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background:
+        linear-gradient(rgba(39, 28, 22, .6), rgba(39, 28, 22, .76)),
+        radial-gradient(circle at 22% 20%, #9d6b3c 0 8%, transparent 28%),
+        linear-gradient(135deg, #2d211a, #775235);
+    }
+
+    .login-card {
+      width: min(440px, 100%);
+      background: rgba(255, 255, 255, .96);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+      padding: 28px;
+    }
+
+    .login-card h1 {
+      margin: 0 0 6px;
+      font-size: 27px;
+    }
+
+    .login-card p {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .flow-box {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .flow-box h4 {
+      margin: 0 0 8px;
+      color: var(--coffee);
+    }
+
+    .flow-box ul,
+    .phase ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .phase-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .phase {
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .phase h4 {
+      margin: 0 0 10px;
+      color: var(--blue);
+    }
+
+    .project-tree {
+      margin: 0;
+      padding: 16px;
+      border-radius: 8px;
+      background: #271c16;
+      color: #fff8ec;
+      overflow: auto;
+      line-height: 1.55;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 50;
+      min-width: 240px;
+      padding: 13px 16px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--leaf);
+      box-shadow: var(--shadow);
+      transform: translateY(120px);
+      opacity: 0;
+      transition: .22s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+      }
+
+      .user-panel {
+        position: static;
+        margin-top: 18px;
+      }
+
+      .grid.two,
+      .grid.three,
+      .flow,
+      .phase-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .main {
+        padding: 20px 14px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        min-width: 680px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-card">
+      <div class="brand" style="color: var(--ink); margin-bottom: 18px;">
+        <div class="brand-mark">SC</div>
+        <div>
+          <h1>Smart Coffee Procurement</h1>
+          <p>ระบบจัดการการสั่งซื้อเมล็ดกาแฟและวัตถุดิบ</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label for="username">ชื่อผู้ใช้</label>
+          <input id="username" value="admin" autocomplete="username" required>
+        </div>
+        <div>
+          <label for="password">รหัสผ่าน</label>
+          <input id="password" type="password" value="1234" autocomplete="current-password" required>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">เข้าสู่ระบบ</button>
+        <span class="pill">ทดลองใช้: admin / 1234</span>
+      </div>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">SC</div>
+        <div>
+          <h1>Smart Coffee Procurement</h1>
+          <p>JavaScript Mini App</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="เมนูหลัก">
+        <button class="active" data-section="dashboard">ภาพรวม</button>
+        <button data-section="suppliers">ผู้ขาย</button>
+        <button data-section="products">วัตถุดิบ</button>
+        <button data-section="procurement">ใบสั่งซื้อ</button>
+        <button data-section="reports">รายงาน</button>
+        <button data-section="roadmap">Roadmap</button>
+      </nav>
+      <div class="user-panel">
+        <strong>ผู้ใช้งาน:</strong> Admin<br>
+        <span>สิทธิ์: ผู้อนุมัติรายการ</span>
+        <div class="actions">
+          <button id="logoutBtn" class="btn secondary" type="button">ออกจากระบบ</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="dashboard" class="section active">
+        <div class="topbar">
+          <div>
+            <h2>ภาพรวมระบบ</h2>
+            <p>ติดตามผู้ขาย สต็อก การสั่งซื้อ และสถานะอนุมัติ</p>
+          </div>
+          <span class="pill" id="todayText"></span>
+        </div>
+        <div class="grid three" id="metricGrid"></div>
+        <div class="card" style="margin-top: 18px;">
+          <div class="card-header">
+            <h3>วิเคราะห์กระบวนการ</h3>
+            <p>Input, Process และ Output ตามเอกสารออกแบบ</p>
+          </div>
+          <div class="card-body flow">
+            <div class="flow-box">
+              <h4>Input</h4>
+              <ul>
+                <li>ข้อมูลผู้ขาย</li>
+                <li>รายการสินค้า</li>
+                <li>จำนวนที่ต้องการ</li>
+              </ul>
+            </div>
+            <div class="flow-box">
+              <h4>Process</h4>
+              <ul>
+                <li>Login และตรวจสอบสิทธิ์</li>
+                <li>เลือกสินค้าและตรวจสต็อก</li>
+                <li>สร้างใบสั่งซื้อและอนุมัติ</li>
+                <li>บันทึกข้อมูลและออกรายงาน</li>
+              </ul>
+            </div>
+            <div class="flow-box">
+              <h4>Output</h4>
+              <ul>
+                <li>ใบสั่งซื้อ</li>
+                <li>รายงาน</li>
+                <li>ข้อมูลสต็อก</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="suppliers" class="section">
+        <div class="topbar">
+          <div>
+            <h2>Supplier Module</h2>
+            <p>เพิ่ม แก้ไข ลบ และค้นหาข้อมูลผู้ขาย</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-header">
+              <h3 id="supplierFormTitle">เพิ่มผู้ขาย</h3>
+            </div>
+            <div class="card-body">
+              <form id="supplierForm" class="form-grid">
+                <input type="hidden" id="supplierId">
+                <div>
+                  <label for="supplierName">ชื่อผู้ขาย</label>
+                  <input id="supplierName" required>
+                </div>
+                <div>
+                  <label for="supplierContact">ผู้ติดต่อ</label>
+                  <input id="supplierContact" required>
+                </div>
+                <div>
+                  <label for="supplierPhone">เบอร์โทร</label>
+                  <input id="supplierPhone" required>
+                </div>
+                <div class="actions">
+                  <button class="btn" type="submit">บันทึกผู้ขาย</button>
+                  <button id="clearSupplierBtn" class="btn secondary" type="button">ล้างฟอร์ม</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>รายชื่อผู้ขาย</h3>
+            </div>
+            <div class="card-body">
+              <input id="supplierSearch" class="search" placeholder="ค้นหาผู้ขาย">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ชื่อผู้ขาย</th>
+                      <th>ผู้ติดต่อ</th>
+                      <th>โทรศัพท์</th>
+                      <th>จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="supplierTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="products" class="section">
+        <div class="topbar">
+          <div>
+            <h2>Product Module</h2>
+            <p>จัดการข้อมูลวัตถุดิบ ราคา และจำนวนคงเหลือ</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-header">
+              <h3 id="productFormTitle">เพิ่มวัตถุดิบ</h3>
+            </div>
+            <div class="card-body">
+              <form id="productForm" class="form-grid">
+                <input type="hidden" id="productId">
+                <div>
+                  <label for="productName">ชื่อวัตถุดิบ</label>
+                  <input id="productName" required>
+                </div>
+                <div class="form-row">
+                  <div>
+                    <label for="productPrice">ราคา/หน่วย</label>
+                    <input id="productPrice" type="number" min="1" required>
+                  </div>
+                  <div>
+                    <label for="productStock">คงเหลือ</label>
+                    <input id="productStock" type="number" min="0" required>
+                  </div>
+                </div>
+                <div>
+                  <label for="productUnit">หน่วย</label>
+                  <input id="productUnit" required>
+                </div>
+                <div class="actions">
+                  <button class="btn" type="submit">บันทึกวัตถุดิบ</button>
+                  <button id="clearProductBtn" class="btn secondary" type="button">ล้างฟอร์ม</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>รายการวัตถุดิบ</h3>
+            </div>
+            <div class="card-body">
+              <input id="productSearch" class="search" placeholder="ค้นหาวัตถุดิบ">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>วัตถุดิบ</th>
+                      <th>ราคา</th>
+                      <th>คงเหลือ</th>
+                      <th>จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="procurement" class="section">
+        <div class="topbar">
+          <div>
+            <h2>Procurement Module</h2>
+            <p>สร้างใบสั่งซื้อ อนุมัติรายการ และบันทึกสถานะ</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-header">
+              <h3>สร้างใบสั่งซื้อ</h3>
+            </div>
+            <div class="card-body">
+              <form id="orderForm" class="form-grid">
+                <div>
+                  <label for="orderSupplier">ผู้ขาย</label>
+                  <select id="orderSupplier" required></select>
+                </div>
+                <div>
+                  <label for="orderProduct">วัตถุดิบ</label>
+                  <select id="orderProduct" required></select>
+                </div>
+                <div>
+                  <label for="orderQty">จำนวนที่ต้องการ</label>
+                  <input id="orderQty" type="number" min="1" value="10" required>
+                </div>
+                <div class="actions">
+                  <button class="btn" type="submit">สร้างใบสั่งซื้อ</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>ใบสั่งซื้อ</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>เลขที่</th>
+                      <th>ผู้ขาย</th>
+                      <th>วัตถุดิบ</th>
+                      <th>ยอดรวม</th>
+                      <th>สถานะ</th>
+                      <th>จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orderTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="reports" class="section">
+        <div class="topbar">
+          <div>
+            <h2>Report Module</h2>
+            <p>รายงานการซื้อ รายงานสต็อก และ Dashboard</p>
+          </div>
+        </div>
+        <div class="grid three" id="reportGrid"></div>
+        <div class="card" style="margin-top: 18px;">
+          <div class="card-header">
+            <h3>รายงานสต็อก</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>วัตถุดิบ</th>
+                    <th>คงเหลือ</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="stockReportTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="roadmap" class="section">
+        <div class="topbar">
+          <div>
+            <h2>Roadmap การพัฒนา</h2>
+            <p>แผนพัฒนาโปรแกรม JavaScript ตามเอกสารแนบ</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body phase-list">
+            <div class="phase"><h4>Phase 1</h4><ul><li>วิเคราะห์ Requirement</li><li>ออกแบบ Use Case</li><li>ออกแบบ Database</li></ul></div>
+            <div class="phase"><h4>Phase 2</h4><ul><li>พัฒนา Frontend</li><li>HTML</li><li>CSS</li><li>JavaScript</li></ul></div>
+            <div class="phase"><h4>Phase 3</h4><ul><li>พัฒนา Backend</li><li>Node.js</li><li>Express.js</li><li>REST API</li></ul></div>
+            <div class="phase"><h4>Phase 4</h4><ul><li>เชื่อมต่อฐานข้อมูล</li><li>MySQL</li><li>CRUD</li></ul></div>
+            <div class="phase"><h4>Phase 5</h4><ul><li>ทดสอบระบบ</li><li>Unit Test</li><li>Integration Test</li></ul></div>
+            <div class="phase"><h4>Phase 6</h4><ul><li>Deploy</li><li>Backup</li><li>Monitoring</li></ul></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 18px;">
+          <div class="card-header">
+            <h3>โครงสร้างโปรเจกต์</h3>
+          </div>
+          <div class="card-body">
+            <pre class="project-tree">project/
+├── index.html
+├── css/
+├── js/
+│   ├── login.js
+│   ├── supplier.js
+│   ├── product.js
+│   ├── procurement.js
+│   └── report.js
+├── server/
+│   ├── app.js
+│   ├── routes/
+│   ├── controllers/
+│   └── models/
+└── database/</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const defaultState = {
+      suppliers: [
+        { id: 1, name: "Chiang Mai Arabica Farm", contact: "คุณมาลี", phone: "081-234-5678" },
+        { id: 2, name: "Northern Roastery Supply", contact: "คุณอานนท์", phone: "089-456-1122" },
+        { id: 3, name: "Green Bean Import", contact: "คุณศิริ", phone: "086-765-3344" }
+      ],
+      products: [
+        { id: 1, name: "เมล็ดกาแฟ Arabica", price: 420, stock: 38, unit: "กก." },
+        { id: 2, name: "เมล็ดกาแฟ Robusta", price: 260, stock: 18, unit: "กก." },
+        { id: 3, name: "นมสด", price: 58, stock: 70, unit: "ลิตร" },
+        { id: 4, name: "น้ำเชื่อมวานิลลา", price: 145, stock: 9, unit: "ขวด" }
+      ],
+      orders: [
+        { id: 1001, supplierId: 1, productId: 1, qty: 12, status: "approved", date: "2026-07-04" },
+        { id: 1002, supplierId: 2, productId: 4, qty: 8, status: "pending", date: "2026-07-04" }
+      ]
+    };
+
+    const state = loadState();
+    const baht = new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" });
+
+    function loadState() {
+      const saved = localStorage.getItem("smartCoffeeState");
+      return saved ? JSON.parse(saved) : structuredClone(defaultState);
+    }
+
+    function saveState() {
+      localStorage.setItem("smartCoffeeState", JSON.stringify(state));
+    }
+
+    function nextId(collection, start = 1) {
+      return collection.length ? Math.max(...collection.map(item => item.id)) + 1 : start;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function findSupplier(id) {
+      return state.suppliers.find(item => item.id === Number(id));
+    }
+
+    function findProduct(id) {
+      return state.products.find(item => item.id === Number(id));
+    }
+
+    function orderTotal(order) {
+      const product = findProduct(order.productId);
+      return product ? product.price * order.qty : 0;
+    }
+
+    function setSection(sectionId) {
+      document.querySelectorAll(".section").forEach(section => section.classList.toggle("active", section.id === sectionId));
+      document.querySelectorAll(".nav button").forEach(button => button.classList.toggle("active", button.dataset.section === sectionId));
+      renderAll();
+    }
+
+    function renderMetrics() {
+      const approvedTotal = state.orders.filter(order => order.status === "approved").reduce((sum, order) => sum + orderTotal(order), 0);
+      const pending = state.orders.filter(order => order.status === "pending").length;
+      const lowStock = state.products.filter(product => product.stock <= 10).length;
+      const metrics = [
+        ["ผู้ขายทั้งหมด", state.suppliers.length, "Supplier Module"],
+        ["วัตถุดิบทั้งหมด", state.products.length, "Product Module"],
+        ["ยอดซื้อที่อนุมัติ", baht.format(approvedTotal), "Procurement Module"],
+        ["ใบสั่งซื้อรออนุมัติ", pending, "ตรวจสอบรายการ"],
+        ["สินค้าใกล้หมด", lowStock, "ควรสั่งซื้อเพิ่ม"],
+        ["รายงานพร้อมใช้งาน", "3", "Purchase, Stock, Dashboard"]
+      ];
+
+      document.getElementById("metricGrid").innerHTML = metrics.map(([label, value, note]) => `
+        <div class="card metric">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </div>
+      `).join("");
+    }
+
+    function renderSuppliers() {
+      const keyword = document.getElementById("supplierSearch").value.trim().toLowerCase();
+      const rows = state.suppliers
+        .filter(item => [item.name, item.contact, item.phone].join(" ").toLowerCase().includes(keyword))
+        .map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.contact}</td>
+            <td>${item.phone}</td>
+            <td>
+              <div class="inline-actions">
+                <button class="icon-btn" title="แก้ไข" onclick="editSupplier(${item.id})">✎</button>
+                <button class="icon-btn" title="ลบ" onclick="deleteSupplier(${item.id})">×</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      document.getElementById("supplierTable").innerHTML = rows || `<tr><td colspan="4">ไม่พบข้อมูลผู้ขาย</td></tr>`;
+    }
+
+    function renderProducts() {
+      const keyword = document.getElementById("productSearch").value.trim().toLowerCase();
+      const rows = state.products
+        .filter(item => [item.name, item.unit].join(" ").toLowerCase().includes(keyword))
+        .map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${baht.format(item.price)} / ${item.unit}</td>
+            <td>${item.stock} ${item.unit} ${item.stock <= 10 ? '<span class="status low">ใกล้หมด</span>' : ""}</td>
+            <td>
+              <div class="inline-actions">
+                <button class="icon-btn" title="แก้ไข" onclick="editProduct(${item.id})">✎</button>
+                <button class="icon-btn" title="ลบ" onclick="deleteProduct(${item.id})">×</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      document.getElementById("productTable").innerHTML = rows || `<tr><td colspan="4">ไม่พบข้อมูลวัตถุดิบ</td></tr>`;
+    }
+
+    function renderOrderOptions() {
+      document.getElementById("orderSupplier").innerHTML = state.suppliers
+        .map(item => `<option value="${item.id}">${item.name}</option>`).join("");
+      document.getElementById("orderProduct").innerHTML = state.products
+        .map(item => `<option value="${item.id}">${item.name} - ${baht.format(item.price)}</option>`).join("");
+    }
+
+    function renderOrders() {
+      const rows = state.orders.map(order => {
+        const supplier = findSupplier(order.supplierId);
+        const product = findProduct(order.productId);
+        const statusText = order.status === "approved" ? "อนุมัติแล้ว" : "รออนุมัติ";
+        return `
+          <tr>
+            <td>PO-${order.id}</td>
+            <td>${supplier ? supplier.name : "-"}</td>
+            <td>${product ? product.name : "-"} (${order.qty})</td>
+            <td>${baht.format(orderTotal(order))}</td>
+            <td><span class="status ${order.status}">${statusText}</span></td>
+            <td>
+              <div class="inline-actions">
+                ${order.status === "pending" ? `<button class="icon-btn" title="อนุมัติ" onclick="approveOrder(${order.id})">✓</button>` : ""}
+                <button class="icon-btn" title="ลบ" onclick="deleteOrder(${order.id})">×</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+      document.getElementById("orderTable").innerHTML = rows || `<tr><td colspan="6">ยังไม่มีใบสั่งซื้อ</td></tr>`;
+    }
+
+    function renderReports() {
+      const approvedOrders = state.orders.filter(order => order.status === "approved");
+      const pendingOrders = state.orders.filter(order => order.status === "pending");
+      const approvedTotal = approvedOrders.reduce((sum, order) => sum + orderTotal(order), 0);
+      const stockValue = state.products.reduce((sum, product) => sum + product.price * product.stock, 0);
+      const reports = [
+        ["รายงานการซื้อ", baht.format(approvedTotal), `${approvedOrders.length} รายการอนุมัติแล้ว`],
+        ["รายงานสต็อก", baht.format(stockValue), `${state.products.length} รายการวัตถุดิบ`],
+        ["Dashboard", pendingOrders.length, "รายการรออนุมัติ"]
+      ];
+      document.getElementById("reportGrid").innerHTML = reports.map(([label, value, note]) => `
+        <div class="card metric">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </div>
+      `).join("");
+
+      document.getElementById("stockReportTable").innerHTML = state.products.map(product => `
+        <tr>
+          <td>${product.name}</td>
+          <td>${product.stock} ${product.unit}</td>
+          <td>${product.stock <= 10 ? '<span class="status low">ควรสั่งซื้อเพิ่ม</span>' : '<span class="status approved">ปกติ</span>'}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderSuppliers();
+      renderProducts();
+      renderOrderOptions();
+      renderOrders();
+      renderReports();
+    }
+
+    function resetSupplierForm() {
+      document.getElementById("supplierForm").reset();
+      document.getElementById("supplierId").value = "";
+      document.getElementById("supplierFormTitle").textContent = "เพิ่มผู้ขาย";
+    }
+
+    function resetProductForm() {
+      document.getElementById("productForm").reset();
+      document.getElementById("productId").value = "";
+      document.getElementById("productFormTitle").textContent = "เพิ่มวัตถุดิบ";
+    }
+
+    window.editSupplier = function(id) {
+      const item = findSupplier(id);
+      document.getElementById("supplierId").value = item.id;
+      document.getElementById("supplierName").value = item.name;
+      document.getElementById("supplierContact").value = item.contact;
+      document.getElementById("supplierPhone").value = item.phone;
+      document.getElementById("supplierFormTitle").textContent = "แก้ไขผู้ขาย";
+    };
+
+    window.deleteSupplier = function(id) {
+      if (state.orders.some(order => order.supplierId === id)) {
+        showToast("ไม่สามารถลบผู้ขายที่มีใบสั่งซื้ออยู่");
+        return;
+      }
+      state.suppliers = state.suppliers.filter(item => item.id !== id);
+      saveState();
+      renderAll();
+      showToast("ลบผู้ขายแล้ว");
+    };
+
+    window.editProduct = function(id) {
+      const item = findProduct(id);
+      document.getElementById("productId").value = item.id;
+      document.getElementById("productName").value = item.name;
+      document.getElementById("productPrice").value = item.price;
+      document.getElementById("productStock").value = item.stock;
+      document.getElementById("productUnit").value = item.unit;
+      document.getElementById("productFormTitle").textContent = "แก้ไขวัตถุดิบ";
+    };
+
+    window.deleteProduct = function(id) {
+      if (state.orders.some(order => order.productId === id)) {
+        showToast("ไม่สามารถลบวัตถุดิบที่มีใบสั่งซื้ออยู่");
+        return;
+      }
+      state.products = state.products.filter(item => item.id !== id);
+      saveState();
+      renderAll();
+      showToast("ลบวัตถุดิบแล้ว");
+    };
+
+    window.approveOrder = function(id) {
+      const order = state.orders.find(item => item.id === id);
+      const product = findProduct(order.productId);
+      if (!product) return;
+      order.status = "approved";
+      product.stock += order.qty;
+      saveState();
+      renderAll();
+      showToast("อนุมัติใบสั่งซื้อและอัปเดตสต็อกแล้ว");
+    };
+
+    window.deleteOrder = function(id) {
+      state.orders = state.orders.filter(item => item.id !== id);
+      saveState();
+      renderAll();
+      showToast("ลบใบสั่งซื้อแล้ว");
+    };
+
+    document.getElementById("loginForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (username === "admin" && password === "1234") {
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        showToast("เข้าสู่ระบบสำเร็จ");
+        renderAll();
+      } else {
+        showToast("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    });
+
+    document.querySelectorAll(".nav button").forEach(button => {
+      button.addEventListener("click", () => setSection(button.dataset.section));
+    });
+
+    document.getElementById("supplierForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const id = Number(document.getElementById("supplierId").value);
+      const payload = {
+        id: id || nextId(state.suppliers),
+        name: document.getElementById("supplierName").value.trim(),
+        contact: document.getElementById("supplierContact").value.trim(),
+        phone: document.getElementById("supplierPhone").value.trim()
+      };
+      if (id) {
+        state.suppliers = state.suppliers.map(item => item.id === id ? payload : item);
+      } else {
+        state.suppliers.push(payload);
+      }
+      saveState();
+      resetSupplierForm();
+      renderAll();
+      showToast("บันทึกข้อมูลผู้ขายแล้ว");
+    });
+
+    document.getElementById("productForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const id = Number(document.getElementById("productId").value);
+      const payload = {
+        id: id || nextId(state.products),
+        name: document.getElementById("productName").value.trim(),
+        price: Number(document.getElementById("productPrice").value),
+        stock: Number(document.getElementById("productStock").value),
+        unit: document.getElementById("productUnit").value.trim()
+      };
+      if (id) {
+        state.products = state.products.map(item => item.id === id ? payload : item);
+      } else {
+        state.products.push(payload);
+      }
+      saveState();
+      resetProductForm();
+      renderAll();
+      showToast("บันทึกข้อมูลวัตถุดิบแล้ว");
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", event => {
+      event.preventDefault();
+      if (!state.suppliers.length || !state.products.length) {
+        showToast("กรุณาเพิ่มผู้ขายและวัตถุดิบก่อน");
+        return;
+      }
+      state.orders.unshift({
+        id: nextId(state.orders, 1001),
+        supplierId: Number(document.getElementById("orderSupplier").value),
+        productId: Number(document.getElementById("orderProduct").value),
+        qty: Number(document.getElementById("orderQty").value),
+        status: "pending",
+        date: new Date().toISOString().slice(0, 10)
+      });
+      saveState();
+      document.getElementById("orderQty").value = 10;
+      renderAll();
+      showToast("สร้างใบสั่งซื้อแล้ว");
+    });
+
+    document.getElementById("clearSupplierBtn").addEventListener("click", resetSupplierForm);
+    document.getElementById("clearProductBtn").addEventListener("click", resetProductForm);
+    document.getElementById("supplierSearch").addEventListener("input", renderSuppliers);
+    document.getElementById("productSearch").addEventListener("input", renderProducts);
+
+    document.getElementById("todayText").textContent = new Date().toLocaleDateString("th-TH", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
